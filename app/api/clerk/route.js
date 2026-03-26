@@ -1,6 +1,6 @@
-import {Webhook, webhook} from 'svix'
-import connectDB from '@config/db.js'
-import User from '@models/User'
+import { Webhook } from "svix";
+import connectDB from "../../config/db";
+import User from "../../models/User";
 import { NextRequest } from 'next/server';
 
 export async function POST(req){
