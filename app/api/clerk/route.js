@@ -60,8 +60,13 @@ export async function POST(req) {
     image: data.image_url || "",
   };
 
-  await connectDB();
-
+try {
+  const conn = await connectDB();
+  console.log("MongoDB connected:", !!conn?.connection?.readyState); // 1 = connected
+} catch (err) {
+  console.error("MongoDB connection failed:", err);
+  return Response.json({ success: false, message: "DB connection failed" }, { status: 500 });
+}
   try {
     switch (type) {
       case "user.created":
