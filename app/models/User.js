@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
 
-// Schema define karo
 const userSchema = new mongoose.Schema(
   {
-  _id:{type:String,required:true},
-    name: {
+    _id: {
       type: String,
       required: true,
+    },
+    name: {
+      type: String,
+      default: "",
       trim: true,
     },
     email: {
@@ -18,15 +20,14 @@ const userSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      required: true,
-    }
+      default: "",
+    },
   },
   {
-    timestamps: true, // ye automatically createdAt aur updatedAt add karega
+    timestamps: true,
   }
 );
 
-// Check karo agar model pehle se exist karta hai, dev hot reload me errors na aaye
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User;
