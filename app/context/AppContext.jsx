@@ -61,64 +61,11 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
-  // 🔹 Send a prompt safely
-  // const sendPrompt = async (promptText) => {
-  //   if (!promptText || isLoading) return;
-  //   setIsLoading(true);
 
-  //   try {
-  //     let activeChat = selectedChat;
-
-  //     // No chat selected? Create one
-  //     if (!activeChat) {
-  //       activeChat = await createNewChat();
-  //       if (!activeChat) {
-  //         setIsLoading(false);
-  //         return toast.error("Failed to create chat");
-  //       }
-  //     }
-
-  //     const userMessage = {
-  //       role: "user",
-  //       content: promptText,
-  //       timestamp: Date.now(),
-  //     };
-
-  //     const updatedChat = {
-  //       ...activeChat,
-  //       messages: [...(activeChat.messages || []), userMessage],
-  //     };
-
-  //     setSelectedChat(updatedChat);
-  //     setChats((prev) =>
-  //       prev.map((chat) => (chat._id === updatedChat._id ? updatedChat : chat))
-  //     );
-
-  //     const { data } = await axios.post("/api/chat/ai", {
-  //       chatId: activeChat._id,
-  //       prompt: promptText,
-  //     });
-
-  //     if (data.success) {
-  //       setSelectedChat(data.chat);
-  //       setChats((prev) =>
-  //         prev.map((chat) => (chat._id === data.chat._id ? data.chat : chat))
-  //       );
-  //     } else {
-  //       toast.error(data.message || "AI failed to respond");
-  //     }
-  //   } catch (error) {
-  //     console.error("SEND PROMPT ERROR:", error);
-  //     toast.error(error.response?.data?.message || error.message || "Failed to send prompt");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // 🔹 Auto-fetch chats when user logs in
   useEffect(() => {
     if (user) fetchUsersChats();
   }, [user]);
+
 
   const value = {
     user,

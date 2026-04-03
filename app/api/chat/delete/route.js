@@ -1,4 +1,4 @@
-import Chat from "@/models/Chat";
+import Chat from "../../../models/Chat.js";
 import connectDB from "../../../config/db";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";

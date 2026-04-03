@@ -24,7 +24,7 @@ const PromptBox = ({ isLoading, setIsLoading }) => {
       if (e) e.preventDefault(); // ✅ safe
       if (!user) return toast.error("You must be logged in to send a prompt");
       if (!selectedChat)
-        return toast.err("No chat selected. Cannot send prompt.", selectedChat); // ✅ safe logging
+        return toast.error("No chat selected. Cannot send prompt.", selectedChat); // ✅ safe logging
       if (isLoading) return toast.error("Please wait for the current response");
 
       setIsLoading(true);

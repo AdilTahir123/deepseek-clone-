@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 const Message = ({role,content}) => {
     useEffect(() => {
-        Prism.highlight();
+        Prism.highlightAll();
       }, [content]);
       const copyMesssage=()=>{
         navigator.clipboard.writeText(content);
