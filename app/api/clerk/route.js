@@ -54,7 +54,7 @@ export async function POST(req) {
 
   // Prepare safe user data
   const userData = {
-    _id: data.id,
+    _id: data.id, 
     email: data.email_addresses?.[0]?.email_address || "",
     name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
     image: data.image_url || "",
@@ -74,7 +74,7 @@ try {
         break;
 
       case "user.updated":
-        await User.findByIdAndUpdate(data.id, userData);
+        await User.findByIdAndUpdate(data.id, userData,{new: true,upsert: true });
         break;
 
       case "user.deleted":

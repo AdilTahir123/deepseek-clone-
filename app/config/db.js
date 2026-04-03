@@ -10,8 +10,7 @@ let cached = global.mongoose;
 
 if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
-}
-
+} 
 async function connectDB() {
   if (cached.conn) {
     return cached.conn;
@@ -26,7 +25,9 @@ try{
   cached.conn = await cached.promise;
 }
 catch(error){
+   cached.promise = null; // reset promise on failure
     console.log("Error connecting to MongoDb:",error);
+    throw error;
 }
   return cached.conn;
 }
