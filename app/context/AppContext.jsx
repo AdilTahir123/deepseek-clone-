@@ -65,7 +65,11 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     if (user) fetchUsersChats();
   }, [user]);
-
+  useEffect(() => {
+    if (chats.length > 0 && !selectedChat) {
+      setSelectedChat(chats[0]);
+    }
+  }, [chats]);
 
   const value = {
     user,

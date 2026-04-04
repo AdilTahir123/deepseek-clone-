@@ -6,7 +6,6 @@ import connectDB from "../../../config/db";
 import { NextResponse } from "next/server";
 
 const openai = new OpenAI({
-        baseURL: 'https://api.deepseek.com',
         apiKey: process.env.DEEPSEEK_API_KEY,
 });
 
@@ -29,18 +28,17 @@ export async function POST(req) {
     await data.save();
      const completion = await openai.chat.completions.create({
     messages: [{ role: "user", content: prompt }],
-    model: "deepseek-chat",
-    store: true,
-    stream:true
+    model: "gpt-5-nano",
+    store: true
   });
   const message=completion.choices[0].message;
   message.timestamp=new Date();
   data.messages.push(message);
   await data.save();
-    return Response.json({success:true,message:message.content},{status:200});
+    return NextResponse.json({success:true,data:message},{status:200});
   }
     catch (error) {
-     return Response.json({ success: false, message: error.message }, { status: 500 });
+     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
     }
 
 }

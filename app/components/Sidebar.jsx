@@ -69,6 +69,7 @@ const Sidebar = ({ expand, setExpand }) => {
 
         {/* New Chat Button */}
         <button 
+          onClick={createNewChat}
           className={`mt-8 flex items-center justify-center cursor-pointer transition-all duration-300 ${
             expand
               ? "bg-primary hover:opacity-90 rounded-2xl gap-2 p-2.5 w-max"
@@ -82,7 +83,7 @@ const Sidebar = ({ expand, setExpand }) => {
           />
 
           {!expand && (
-            <div className="absolute w-max -top-12 -right-12 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black text-white text-sm px-3 py-2 rounded-lg shadow-lg pointer-events-none">
+            <div  className="absolute w-max -top-12 -right-12 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black text-white text-sm px-3 py-2 rounded-lg shadow-lg pointer-events-none">
               New chat
               <div className="w-3 h-3 absolute bg-black rotate-45 left-4 -bottom-1.5"></div>
             </div>
