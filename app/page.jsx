@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useEffect, useRef, useState } from "react";
+import React, {  useEffect, useRef, useState } from "react";
 import PromptBox from './components/PromptBox.jsx';
 import Image from "next/image";
 import { assets } from "@/assets/assets";

@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import connectDB from "../../../config/db.js";
 import Chat from "../../../models/Chat.js";
 import { getAuth } from "@clerk/nextjs/server";
@@ -18,7 +19,7 @@ export async function GET(req) {
     await connectDB();
     // 3️⃣ Fetch chats for the user
     const data = await Chat.find({ userId });
-
+ 
     // 4️⃣ Return chats in 'data' key (for AppContext compatibility)
     return NextResponse.json(
       { success: true, data: data },

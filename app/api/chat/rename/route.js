@@ -18,9 +18,9 @@ export async function POST(req) {
     const { chatId, newName } = await req.json();
     // 4️⃣ Update chat name
     const updatedChat = await Chat.findByIdAndUpdate(
-      chatId,
-      { name: newName },
-      { new: true }
+         chatId,
+      {  name: newName },
+      {  new: true }
     );
     // 5️⃣ Return updated chat in response
     return NextResponse.json(

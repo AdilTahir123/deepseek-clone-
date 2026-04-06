@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import Image from "next/image";
 import { assets } from "@/assets/assets";
@@ -7,102 +8,98 @@ import axios from "axios";
 
 const PromptBox = ({ isLoading, setIsLoading }) => {
   const [prompt, setPrompt] = useState("");
-  const { user, chats, setChats, selectedChat, setSelectedChat } =
-    useAppContext();
+  const { user, chats, setChats, selectedChat, setSelectedChat } = useAppContext();
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      sendPrompt(e); // ✅ event pass karo
+      sendPrompt(e);
     }
   };
 
   const sendPrompt = async (e) => {
+    e?.preventDefault();
     const promptCopy = prompt.trim();
+    // console.log("Sending prompt:", promptCopy);
+    if (!user) return toast.error("You must be logged in to send a prompt");
+    if (!promptCopy) return toast.error("Prompt cannot be empty");
+    if (!selectedChat) return toast.error("No chat selected. Cannot send prompt.");
+    if (isLoading) return toast.error("Please wait for the current response");
+  
+    setIsLoading(true);
+  
+    setPrompt("");
 
     try {
-      if (e) e.preventDefault(); // ✅ safe
-      if (!user) return toast.error("You must be logged in to send a prompt");
-      if (!promptCopy) return toast.error("Prompt cannot be empty");
-      if (!selectedChat)
-        return toast.error("No chat selected. Cannot send prompt.", selectedChat); // ✅ safe logging
-      if (isLoading) return toast.error("Please wait for the current response");
-
-      setIsLoading(true);
-      setPrompt("");
-
       const userPrompt = {
         role: "user",
         content: promptCopy,
         timestamp: Date.now(),
       };
 
+      // Add user message
       setChats((prevChats) =>
         prevChats.map((chat) =>
           chat?._id === selectedChat._id
             ? { ...chat, messages: [...chat.messages, userPrompt] }
-            : chat,
-        ),
+            : chat
+        )
       );
+      // console.log("Updated chats with user prompt:", chats);
 
       setSelectedChat((prevChat) => ({
         ...prevChat,
         messages: [...prevChat.messages, userPrompt],
       }));
-
+      // console.log("Updated selectedChat with user prompt:", selectedChat);
+      // // Call AI API
       const { data } = await axios.post("/api/chat/ai", {
         chatId: selectedChat._id,
-        prompt: promptCopy, // ✅ promptCopy use karo
+        prompt: promptCopy,
       });
 
-      if (data.success) 
-        {
-                  setChats((prevChats) =>
-          prevChats.map((chat) =>
-            chat._id === selectedChat._id
-              ? { ...chat, messages: [...chat.messages, data.data] }
-              : chat,
-          ));
-
-        const message = data.data.content;
-        const messageTokens = message.split(" ");
-
-        let assistantMessage = {
-          role: "assistant",
-          content: "",
-          timestamp: Date.now(),
-        };
-
-        // empty assistant message add first
-
-        setSelectedChat((prevChat) =>
-        (
-          {
-            ...prevChat,
-            messages: [...prevChat.messages, assistantMessage],
-          }
-        )  
-        );
-
-        for (let i = 0; i < messageTokens.length; i++) {
-          setTimeout(() => {
-            assistantMessage.content= messageTokens.slice(0, i + 1).join(" ");
-
-            setSelectedChat((prev) => {
-              if (!prev) return prev;
-
-              const updatedMessages = [
-                ...prev.messages.slice(0, -1),
-                assistantMessage,
-              ];
-
-              return { ...prev, messages: updatedMessages };
-            });
-          }, i * 100);
-        }
-      } else {
-        toast.error(data.message || "Failed to get response from AI");
+      if (!data?.data) {
+        toast.error(data?.message || "Failed to get response from AI");
+        return;
       }
+
+      const messageTokens = data.data.content.split(" ");
+
+      // Add an empty assistant message first
+      setSelectedChat((prev) => ({
+        ...prev,
+        messages: [...prev.messages, { role: "assistant", content: "", timestamp: Date.now() }],
+      }));
+      // console.log(selectedChat);
+
+      // Typing animation
+      messageTokens.forEach((_, i) => {
+        setTimeout(() => {
+          setSelectedChat((prev) => {
+            if (!prev) return prev;
+
+            const updatedMessages = [
+              ...prev.messages.slice(0, -1), // all except last
+              {
+                role: "assistant",
+                content: messageTokens.slice(0, i + 1).join(" "),
+                timestamp: Date.now(),
+              },
+            ];
+            
+            return { ...prev, messages: updatedMessages };
+          });
+        }, i * 100);
+      });
+
+      // Also update chats sidebar
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat._id === selectedChat._id
+            ? { ...chat, messages: [...chat.messages, { role: "assistant", content: data.data.content, timestamp: Date.now() }] }
+            : chat
+        )
+      );
     } catch (error) {
       toast.error(error.message || "Error sending prompt");
     } finally {
@@ -113,7 +110,9 @@ const PromptBox = ({ isLoading, setIsLoading }) => {
   return (
     <form
       onSubmit={sendPrompt}
-      className={`w-full ${selectedChat?.messages.length>0 ? "max-w-3xl" : "max-w-2xl"} bg-[#404045] p-4 rounded-3xl mt-4 transition-all`}
+      className={`w-full ${
+        selectedChat?.messages.length > 0 ? "max-w-3xl" : "max-w-2xl"
+      } bg-[#404045] p-4 rounded-3xl mt-4 transition-all`}
     >
       <textarea
         onKeyDown={handleKeyDown}
@@ -137,8 +136,8 @@ const PromptBox = ({ isLoading, setIsLoading }) => {
           </p>
         </div>
 
-        <div className="flex gap-2 items-center">
-          <Image src={assets.pin_icon} alt="" />
+        <div className="flex gap-3 items-center">
+          <Image src={assets.pin_icon} alt="pin" className="h-5" />
           <button
             type="submit"
             className={`${prompt ? "bg-primary" : "bg-[#71717a]"} rounded-full p-2 cursor-pointer`}
